@@ -98,6 +98,7 @@ export class MemStorage implements IStorage {
   
   private initializeDictionary() {
     const commonMappings: [string, string, string?, string[]?][] = [
+      // Individual words
       ["njan", "I", "pronoun", ["Njan veetil aanu", "Njan school il pokunnu"]],
       ["ningal", "you", "pronoun", ["Ningal evide pokuva?", "Ningal enthu cheyyunnu?"]],
       ["avan", "he", "pronoun", ["Avan school il pokunnu"]],
@@ -135,11 +136,29 @@ export class MemStorage implements IStorage {
       ["enthanu", "what is", "question", ["Enthu vilayanu?", "Enthanu vishesham?"]],
       ["enthu", "what", "question", ["Enthu vishesham?"]],
       ["evide", "where", "question", ["Nee evide aanu?"]],
+      ["evideyka", "where to", "question", ["Evideyka povunathu?"]],
+      ["povunathu", "going", "verb", ["Njan veetileku povunathu"]],
+      ["povunathe", "going", "verb", ["Avan schoolileku povunathe"]],
       ["ethra", "how much", "question", ["Ithu ethra vilayanu?"]],
       ["ippol", "now", "adverb", ["Ippol enthu cheyyunnu?"]],
       ["innu", "today", "adverb", ["Innu mazha undu"]],
       ["nale", "tomorrow", "adverb", ["Njan nale varaam"]],
-      ["innale", "yesterday", "adverb", ["Innale njaan cinema kannu"]]
+      ["innale", "yesterday", "adverb", ["Innale njaan cinema kannu"]],
+      
+      // Common phrases
+      ["evideyka povunathe", "where are you going", "phrase", ["Evideyka povunathe?", "Nee evideyka povunathe?"]],
+      ["njan veedu pokuva", "I am going home", "phrase", ["Njan veedu pokuva", "Ippol njan veedu pokuva"]],
+      ["eniku vishakkunnu", "I am hungry", "phrase", ["Eniku vishakkunnu", "Ippol eniku vishakkunnu"]],
+      ["enthu vishesham", "what's new", "phrase", ["Enthu vishesham?", "Ippol enthu vishesham?"]],
+      ["sugham aano", "how are you", "phrase", ["Sugham aano?", "Ningalku sugham aano?"]],
+      ["enikku vellam venam", "I need water", "phrase", ["Enikku vellam venam", "Dayavayi enikku vellam venam"]],
+      ["samayam ethra aayi", "what time is it", "phrase", ["Samayam ethra aayi?", "Ippol samayam ethra aayi?"]],
+      ["vare kanam", "see you later", "phrase", ["Vare kanam", "Njan pokunnu, vare kanam"]],
+      ["enne sahayikku", "help me", "phrase", ["Enne sahayikku", "Dayavayi enne sahayikku"]],
+      ["enikku arinjooda", "I don't know", "phrase", ["Enikku arinjooda", "Maappu, enikku arinjooda"]],
+      ["enikku manasilayilla", "I don't understand", "phrase", ["Enikku manasilayilla", "Vishamamaanu, enikku manasilayilla"]],
+      ["ethrayum pettennu", "as soon as possible", "phrase", ["Ethrayum pettennu varaam", "Njan ethrayum pettennu varaam"]],
+      ["nanni ariyikkunnu", "thank you very much", "phrase", ["Nanni ariyikkunnu", "Sahayathinu nanni ariyikkunnu"]]
     ];
     
     commonMappings.forEach(([manglishWord, englishWord, partOfSpeech, examples], index) => {
