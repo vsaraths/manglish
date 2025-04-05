@@ -1,0 +1,30 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <path d="M30,30 Q60,10 90,30 T150,30 Q190,30 190,80 T150,130 Q120,150 90,130 T30,130 Q10,130 10,80 T30,30" 
+    fill="none" 
+    stroke="currentColor" 
+    stroke-width="4"
+    stroke-linecap="round"
+    stroke-linejoin="round" />
+    
+  <path d="M50,50 C70,40 90,60 110,50 C130,40 150,60 170,50" 
+    fill="none" 
+    stroke="currentColor" 
+    stroke-width="2"
+    stroke-linecap="round" />
+    
+  <path d="M40,100 C60,90 80,110 100,100 C120,90 140,110 160,100" 
+    fill="none" 
+    stroke="currentColor" 
+    stroke-width="2"
+    stroke-linecap="round" />
+    
+  <path d="M30,150 C50,140 70,160 90,150 C110,140 130,160 150,150" 
+    fill="none" 
+    stroke="currentColor" 
+    stroke-width="2"
+    stroke-linecap="round" />
+    
+  <circle cx="100" cy="80" r="5" fill="currentColor" />
+  <circle cx="80" cy="120" r="5" fill="currentColor" />
+  <circle cx="120" cy="120" r="5" fill="currentColor" />
+</svg>
