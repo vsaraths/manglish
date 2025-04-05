@@ -3,6 +3,8 @@ import {
   dictionary, type Dictionary, type InsertDictionary,
   users, type User, type InsertUser 
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc, asc, sql } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -18,85 +20,88 @@ export interface IStorage {
   getDictionaryEntries(): Promise<Dictionary[]>;
   getDictionaryEntry(manglishWord: string): Promise<Dictionary | undefined>;
   createDictionaryEntry(entry: InsertDictionary): Promise<Dictionary>;
+  
+  // Database initialization
+  initDictionary(): Promise<void>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private translationEntries: Map<number, Translation>;
-  private dictionaryEntries: Map<string, Dictionary>;
-  userCurrentId: number;
-  translationCurrentId: number;
-  dictionaryCurrentId: number;
-
-  constructor() {
-    this.users = new Map();
-    this.translationEntries = new Map();
-    this.dictionaryEntries = new Map();
-    this.userCurrentId = 1;
-    this.translationCurrentId = 1;
-    this.dictionaryCurrentId = 1;
-    
-    // Initialize with some sample dictionary mappings
-    this.initializeDictionary();
-  }
-
+export class DatabaseStorage implements IStorage {
+  // User methods
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userCurrentId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
   }
   
+  // Translation methods
   async getTranslations(limit = 10): Promise<Translation[]> {
-    const translations = Array.from(this.translationEntries.values())
-      .sort((a, b) => {
-        return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
-      });
-      
-    return limit ? translations.slice(0, limit) : translations;
+    const result = await db.select().from(translations)
+      .orderBy(desc(translations.timestamp))
+      .limit(limit);
+    return result;
   }
   
   async getTranslation(id: number): Promise<Translation | undefined> {
-    return this.translationEntries.get(id);
-  }
-  
-  async createTranslation(insertTranslation: InsertTranslation): Promise<Translation> {
-    const id = this.translationCurrentId++;
-    const translation: Translation = { 
-      ...insertTranslation, 
-      id, 
-      timestamp: new Date() 
-    };
-    this.translationEntries.set(id, translation);
+    const [translation] = await db.select().from(translations).where(eq(translations.id, id));
     return translation;
   }
   
+  async createTranslation(insertTranslation: InsertTranslation): Promise<Translation> {
+    const [translation] = await db.insert(translations).values(insertTranslation).returning();
+    return translation;
+  }
+  
+  // Dictionary methods
   async getDictionaryEntries(): Promise<Dictionary[]> {
-    return Array.from(this.dictionaryEntries.values());
+    return await db.select().from(dictionary);
   }
   
   async getDictionaryEntry(manglishWord: string): Promise<Dictionary | undefined> {
-    return this.dictionaryEntries.get(manglishWord.toLowerCase());
-  }
-  
-  async createDictionaryEntry(insertDictionary: InsertDictionary): Promise<Dictionary> {
-    const id = this.dictionaryCurrentId++;
-    const entry: Dictionary = { ...insertDictionary, id };
-    this.dictionaryEntries.set(insertDictionary.manglishWord.toLowerCase(), entry);
+    const [entry] = await db.select().from(dictionary)
+      .where(eq(dictionary.manglishWord, manglishWord.toLowerCase()));
     return entry;
   }
   
-  private initializeDictionary() {
+  async createDictionaryEntry(insertDictionary: InsertDictionary): Promise<Dictionary> {
+    // Ensure manglishWord is lowercase for consistency and examples is properly typed
+    const entryData = {
+      manglishWord: insertDictionary.manglishWord.toLowerCase(),
+      englishWord: insertDictionary.englishWord,
+      partOfSpeech: insertDictionary.partOfSpeech || null,
+      examples: Array.isArray(insertDictionary.examples) ? insertDictionary.examples : []
+    };
+    
+    try {
+      // Type explicitly for drizzle
+      const [result] = await db.insert(dictionary).values({
+        manglishWord: entryData.manglishWord,
+        englishWord: entryData.englishWord,
+        partOfSpeech: entryData.partOfSpeech,
+        examples: entryData.examples as any
+      }).returning();
+      return result;
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('duplicate key')) {
+        // If entry already exists, return the existing one
+        const [existingEntry] = await db.select().from(dictionary)
+          .where(eq(dictionary.manglishWord, entryData.manglishWord));
+        return existingEntry;
+      }
+      throw error;
+    }
+  }
+  
+  // Initialize the dictionary with common words and phrases
+  async initDictionary(): Promise<void> {
     const commonMappings: [string, string, string?, string[]?][] = [
       // Individual words
       ["njan", "I", "pronoun", ["Njan veetil aanu", "Njan school il pokunnu"]],
@@ -161,15 +166,41 @@ export class MemStorage implements IStorage {
       ["nanni ariyikkunnu", "thank you very much", "phrase", ["Nanni ariyikkunnu", "Sahayathinu nanni ariyikkunnu"]]
     ];
     
-    commonMappings.forEach(([manglishWord, englishWord, partOfSpeech, examples], index) => {
-      this.createDictionaryEntry({
-        manglishWord,
-        englishWord,
-        partOfSpeech: partOfSpeech || "",
-        examples: examples || []
+    // Insert dictionary entries in batches to avoid overwhelming the database
+    const batchSize = 25;
+    
+    for (let i = 0; i < commonMappings.length; i += batchSize) {
+      const batch = commonMappings.slice(i, i + batchSize);
+      
+      // Map entries with proper typing
+      const entries = batch.map(([manglishWord, englishWord, partOfSpeech, examples]) => {
+        return {
+          manglishWord: manglishWord.toLowerCase(),
+          englishWord,
+          partOfSpeech: partOfSpeech || null,
+          examples: examples || []
+        };
       });
-    });
+      
+      // Using a transaction to ensure all entries in a batch are inserted or none
+      await db.transaction(async (tx) => {
+        for (const entry of entries) {
+          try {
+            // Explicitly structure the data for Drizzle
+            await tx.insert(dictionary).values({
+              manglishWord: entry.manglishWord,
+              englishWord: entry.englishWord,
+              partOfSpeech: entry.partOfSpeech,
+              examples: entry.examples as any
+            }).onConflictDoNothing();
+          } catch (error) {
+            console.error(`Error inserting dictionary entry: ${entry.manglishWord}`, error);
+          }
+        }
+      });
+    }
   }
 }
 
-export const storage = new MemStorage();
+// Create and export a storage instance
+export const storage = new DatabaseStorage();
