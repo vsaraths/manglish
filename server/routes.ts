@@ -5,6 +5,7 @@ import { insertTranslationSchema, insertDictionarySchema } from "@shared/schema"
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { malayalamToManglish, manglishToMalayalam } from "./transliteration";
+import { translateManglishToEnglish, initTranslator } from "./translator";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API endpoints
@@ -36,7 +37,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Translate text from Manglish to English
   apiRouter.post("/translate", async (req, res) => {
     try {
-      const { manglishText, englishText } = insertTranslationSchema.parse(req.body);
+      // Extract manglish text from the request
+      const { manglishText } = req.body;
+      
+      if (!manglishText || typeof manglishText !== 'string') {
+        return res.status(400).json({ message: "Manglish text is required" });
+      }
+      
+      // Get the translation using our advanced translator
+      const englishText = await translateManglishToEnglish(manglishText);
       
       // Save the translation to history
       const translation = await storage.createTranslation({

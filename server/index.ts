@@ -4,6 +4,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import { storage } from "./storage";
 import { db } from "./db";
 import { sql } from "drizzle-orm";
+import { initTranslator } from "./translator";
 
 const app = express();
 app.use(express.json());
@@ -48,6 +49,11 @@ app.use((req, res, next) => {
     // Push schema directly to database
     log("Initializing dictionary data");
     await storage.initDictionary();
+    
+    // Initialize the translator with dictionary data
+    log("Initializing translator");
+    await initTranslator();
+    
     log("Database initialization complete");
   } catch (error) {
     log(`Database initialization error: ${error}`);
