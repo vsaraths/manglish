@@ -9,6 +9,7 @@ import {
   ScanText,
   ChevronDown,
   ChevronUp,
+  Sparkles,
 } from "lucide-react";
 import { CopyButton } from "@/components/ui/copy-button";
 import { translateManglishToEnglish } from "@/lib/translator";
@@ -23,6 +24,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ConverterProps {
   displayLanguage: "english" | "malayalam";
@@ -36,6 +38,7 @@ export function ManglishConverter({ displayLanguage }: ConverterProps) {
   const [characterCount, setCharacterCount] = useState(0);
   const [wordCount, setWordCount] = useState(0);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [showAnimation, setShowAnimation] = useState(false);
 
   const { toast } = useToast();
 
@@ -65,15 +68,24 @@ export function ManglishConverter({ displayLanguage }: ConverterProps) {
     }
 
     setIsTranslating(true);
+    setShowAnimation(false);
+    
     try {
       // Use the translator library to translate
       const result = await translateManglishToEnglish(manglishText);
       setEnglishText(result);
+      
+      // Trigger animation
+      setShowAnimation(true);
 
       // Save the translation to history
-      await apiRequest("POST", "/api/translate", {
-        manglishText: manglishText,
-        englishText: result,
+      await apiRequest("/api/translate", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          manglishText: manglishText,
+          englishText: result,
+        })
       });
 
       // Invalidate queries to update history
@@ -103,6 +115,7 @@ export function ManglishConverter({ displayLanguage }: ConverterProps) {
   const clearText = () => {
     setManglishText("");
     setEnglishText("");
+    setShowAnimation(false);
   };
 
   const examples = [
@@ -176,33 +189,103 @@ export function ManglishConverter({ displayLanguage }: ConverterProps) {
               </h2>
               <CopyButton text={englishText} />
             </div>
-            <div className="min-h-32 p-3 bg-gray-50 rounded-md border">
-              {englishText ? (
-                <p className="whitespace-pre-wrap">{englishText}</p>
-              ) : (
-                <p className="text-gray-400 italic">
-                  {displayLanguage === "english"
-                    ? "Translation will appear here..."
-                    : "വിവർത്തനം ഇവിടെ കാണിക്കും..."}
-                </p>
-              )}
+            <div className="min-h-32 p-3 bg-gray-50 rounded-md border relative overflow-hidden">
+              <AnimatePresence mode="wait">
+                {englishText ? (
+                  <motion.div
+                    key="translation"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.5 }}
+                    className="relative z-10"
+                  >
+                    <p className="whitespace-pre-wrap">{englishText}</p>
+                    {showAnimation && (
+                      <motion.div
+                        className="absolute inset-0 pointer-events-none"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.3, duration: 0.5 }}
+                      >
+                        <div className="absolute top-0 left-0 w-full h-full">
+                          {Array.from({ length: 15 }).map((_, i) => (
+                            <motion.div
+                              key={i}
+                              className="absolute"
+                              initial={{ 
+                                x: Math.random() * 100 - 50 + "%", 
+                                y: Math.random() * 100 - 50 + "%",
+                                opacity: 0,
+                                scale: 0
+                              }}
+                              animate={{ 
+                                opacity: [0, 1, 0],
+                                scale: [0, 1, 0],
+                                y: [0, Math.random() * -30 - 10]
+                              }}
+                              transition={{ 
+                                duration: 1.5, 
+                                delay: i * 0.1,
+                                times: [0, 0.4, 1],
+                                ease: "easeOut" 
+                              }}
+                            >
+                              <Sparkles className="text-primary h-3 w-3" />
+                            </motion.div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                ) : (
+                  <motion.p
+                    key="placeholder"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="text-gray-400 italic"
+                  >
+                    {displayLanguage === "english"
+                      ? "Translation will appear here..."
+                      : "വിവർത്തനം ഇവിടെ കാണിക്കും..."}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </CardContent>
         <CardFooter className="px-6 py-4 bg-gray-50 border-t flex justify-between">
           <div className="flex gap-2">
-            <Button
-              onClick={handleTranslate}
-              disabled={isTranslating || !manglishText.trim()}
-              className="gap-2"
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              {isTranslating ? (
-                <RotateCw className="h-4 w-4 animate-spin" />
-              ) : (
-                <ScanText className="h-4 w-4" />
-              )}
-              {displayLanguage === "english" ? "Translate" : "വിവർത്തനം ചെയ്യുക"}
-            </Button>
+              <Button
+                onClick={handleTranslate}
+                disabled={isTranslating || !manglishText.trim()}
+                className="gap-2 relative overflow-hidden"
+              >
+                {isTranslating ? (
+                  <RotateCw className="h-4 w-4 animate-spin" />
+                ) : (
+                  <ScanText className="h-4 w-4" />
+                )}
+                {displayLanguage === "english" ? "Translate" : "വിവർത്തനം ചെയ്യുക"}
+                
+                <AnimatePresence>
+                  {showAnimation && (
+                    <motion.span
+                      className="absolute inset-0 bg-primary/10 rounded-md"
+                      initial={{ scale: 0, opacity: 1 }}
+                      animate={{ scale: 2, opacity: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.8 }}
+                    />
+                  )}
+                </AnimatePresence>
+              </Button>
+            </motion.div>
             <Button
               variant="outline"
               onClick={clearText}
