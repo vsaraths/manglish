@@ -1,5 +1,47 @@
 import { apiRequest } from "./queryClient";
 
+// Define response interface outside the functions to avoid duplication
+interface TransliterationResponse {
+  original: string;
+  transliterated: string;
+}
+
+// Function to transliterate Malayalam to Manglish using the API
+export async function transliterateMalayalamToManglish(malayalamText: string): Promise<string> {
+  try {
+    const response = await apiRequest<TransliterationResponse>('/api/transliterate/malayalam-to-manglish', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ text: malayalamText })
+    });
+    
+    return response.transliterated || '';
+  } catch (error) {
+    console.error('Transliteration error:', error);
+    return '';
+  }
+}
+
+// Function to transliterate Manglish to Malayalam using the API
+export async function transliterateManglishToMalayalam(manglishText: string): Promise<string> {
+  try {
+    const response = await apiRequest<TransliterationResponse>('/api/transliterate/manglish-to-malayalam', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ text: manglishText })
+    });
+    
+    return response.transliterated || '';
+  } catch (error) {
+    console.error('Transliteration error:', error);
+    return '';
+  }
+}
+
 // Function to translate Manglish to English
 export async function translateManglishToEnglish(manglishText: string): Promise<string> {
   try {

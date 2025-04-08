@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { ManglishConverter } from "@/components/manglish-converter";
 import { LanguageToggle } from "@/components/language-toggle";
 import { Footer } from "@/components/footer";
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { BookOpen } from "lucide-react";
 
 export default function Home() {
   const [displayLanguage, setDisplayLanguage] = useState<"english" | "malayalam">("english");
@@ -35,10 +38,18 @@ export default function Home() {
               {displayLanguage === "english" ? "Manglish to English" : "മംഗ്ലീഷ് ടു ഇംഗ്ലീഷ്"}
             </h1>
           </div>
-          <LanguageToggle
-            displayLanguage={displayLanguage}
-            onLanguageChange={setDisplayLanguage}
-          />
+          <div className="flex items-center gap-2">
+            <Link href="/dictionary">
+              <Button variant="outline" className="flex items-center gap-2">
+                <BookOpen size={16} />
+                {displayLanguage === "english" ? "Dictionary" : "നിഘണ്ടു"}
+              </Button>
+            </Link>
+            <LanguageToggle
+              displayLanguage={displayLanguage}
+              onLanguageChange={setDisplayLanguage}
+            />
+          </div>
         </div>
       </header>
 
