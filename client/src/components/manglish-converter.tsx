@@ -19,6 +19,7 @@ import { queryClient } from "@/lib/queryClient";
 import { Badge } from "@/components/ui/badge";
 import { HistoryDrawer } from "./history-drawer";
 import { MalayalamSpinner } from "@/components/ui/malayalam-spinner";
+import { Progress } from "@/components/ui/progress";
 import {
   Collapsible,
   CollapsibleContent,
