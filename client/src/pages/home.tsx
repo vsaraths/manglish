@@ -35,7 +35,10 @@ export default function Home() {
               </svg>
             </div>
             <h1 className="text-xl font-bold tracking-tight">
-              {displayLanguage === "english" ? "Manglish to English" : "മംഗ്ലീഷ് ടു ഇംഗ്ലീഷ്"}
+              {displayLanguage === "english" ? "Artham" : "അർത്ഥം"}
+              <span className="text-sm font-normal text-muted-foreground ml-2">
+                {displayLanguage === "english" ? "Manglish to English" : "മംഗ്ലീഷ് ടു ഇംഗ്ലീഷ്"}
+              </span>
             </h1>
           </div>
           <div className="flex items-center gap-2">
@@ -57,8 +60,8 @@ export default function Home() {
         <div className="max-w-3xl mx-auto mb-8 text-center">
           <h1 className="text-3xl font-bold tracking-tight mb-3">
             {displayLanguage === "english"
-              ? "Manglish to English Converter"
-              : "മംഗ്ലീഷ് ടു ഇംഗ്ലീഷ് കൺവെർട്ടർ"}
+              ? "Artham: Manglish to English Translator"
+              : "അർത്ഥം: മംഗ്ലീഷ് ടു ഇംഗ്ലീഷ് വിവർത്തകൻ"}
           </h1>
           <p className="text-gray-500 max-w-2xl mx-auto">
             {displayLanguage === "english"

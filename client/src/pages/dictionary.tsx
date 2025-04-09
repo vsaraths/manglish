@@ -20,7 +20,7 @@ export default function DictionaryPage() {
               </Button>
             </Link>
             <h1 className="text-xl font-bold">
-              {displayLanguage === "english" ? "Manglish Dictionary" : "മംഗ്ലിഷ് നിഘണ്ടു"}
+              {displayLanguage === "english" ? "Artham Dictionary" : "അർത്ഥം നിഘണ്ടു"}
             </h1>
           </div>
           <LanguageToggle 

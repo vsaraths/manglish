@@ -12,12 +12,12 @@ export function Footer({ displayLanguage }: FooterProps) {
       <div className="container flex flex-col md:flex-row items-center justify-between gap-4 md:h-16">
         <p className="text-sm text-gray-500">
           {displayLanguage === "english"
-            ? "© 2023 Manglish to English Converter. Open source project."
-            : "© 2023 മംഗ്ലീഷ് ടു ഇംഗ്ലീഷ് കൺവെർട്ടർ. ഓപ്പൺ സോഴ്സ് പ്രോജക്റ്റ്."}
+            ? "© 2025 Artham - Manglish to English Translator. Open source project."
+            : "© 2025 അർത്ഥം - മംഗ്ലീഷ് ടു ഇംഗ്ലീഷ് വിവർത്തകൻ. ഓപ്പൺ സോഴ്സ് പ്രോജക്റ്റ്."}
         </p>
         <div className="flex items-center">
           <a
-            href="https://github.com/yourusername/manglish-to-english"
+            href="https://github.com/yourusername/artham"
             target="_blank"
             rel="noopener noreferrer"
           >
