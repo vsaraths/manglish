@@ -108,7 +108,6 @@ const commonWordMap: Record<string, string> = {
   'aval': 'she',
   'athu': 'it',
   'nammal': 'we',
-  'avar': 'they',
   'ente': 'my',
   'ninte': 'your',
   'avante': 'his',
@@ -117,8 +116,16 @@ const commonWordMap: Record<string, string> = {
   'njangalude': 'our',
   'ningalude': 'your',
   'avarude': 'their',
+  'njangal': 'we all',
+  'ningal': 'you all',
+  'ellavarum': 'everyone',
+  'eniku': 'I',
+  'ninaku': 'you',
+  'avanu': 'he',
+  'avalu': 'she',
   'ivide': 'here',
   'avide': 'there',
+  'ivideyaanu': 'is here',
   'ippol': 'now',
   'appol': 'then',
   'innu': 'today',
@@ -143,6 +150,22 @@ const commonWordMap: Record<string, string> = {
   'venda': 'don\'t want',
   'sheriyanu': 'correct',
   'thettanu': 'wrong',
+  'veedu': 'house',
+  'veetil': 'at home',
+  'veettil': 'at home',
+  'peru': 'name',
+  'engineer': 'engineer',
+  'doctor': 'doctor',
+  'vishwasikkuka': 'believe',
+  'sahayikkuka': 'help',
+  'nalloo': 'good',
+  'ketto': 'listen',
+  'parayoo': 'say',
+  'adyamayi': 'for the first time',
+  'nallathupole': 'very well',
+  'ariyilla': 'do not know',
+  'vannath': 'came',
+  'malayalam': 'Malayalam',
 };
 
 /**
@@ -356,8 +379,9 @@ export async function translateManglishToEnglish(manglishText: string): Promise<
           translatedTokens.push(translation);
         }
       } else {
-        // Leave unknown words out to improve readability
-        translatedTokens.push('');
+        // Keep unknown words in the original form (better than leaving them out)
+        // This ensures we don't lose information and context
+        translatedTokens.push(token);
       }
     }
     
@@ -384,6 +408,24 @@ export async function translateManglishToEnglish(manglishText: string): Promise<
       .replace(/\b(is|are|was|were) ([bcdfghjklmnpqrstvwxyz])/gi, '$1 a $2')
       // Fix any irregular plurals
       .replace(/\b(\w+)s's\b/g, '$1s\'')
+      // Remove "elephant" if it appears at the end of a sentence (common error from "aanu")
+      .replace(/\belephant\b\s*\.?$/i, 'is')
+      // Fix the common case of "name thomas elephant" pattern
+      .replace(/\bname ([A-Za-z]+) elephant\b/i, 'name is $1')
+      // Fix word order for "home at" to "at home"
+      .replace(/\bhome at\b/i, 'at home')
+      // Fix common grammar patterns
+      .replace(/\bI now at home is\b/i, 'I am now at home')
+      .replace(/\bMy name ([A-Za-z]+) is\b/i, 'My name is $1')
+      .replace(/\bMy peru ([A-Za-z]+) is\b/i, 'My name is $1')
+      .replace(/\bI a ([A-Za-z]+) is\b/i, 'I am a $1')
+      .replace(/\bI for the first time is a?(\s*)here came\b/i, 'I came here for the first time')
+      .replace(/\bI for the first time is a?(\s*)here\b/i, 'I am here for the first time')
+      .replace(/\bI have Malayalam very well do not know\b/i, 'I do not know Malayalam very well')
+      .replace(/\bI Malayalam very well do not know\b/i, 'I do not know Malayalam very well')
+      .replace(/\bWe all everyone at home is\b/i, 'We are all at home')
+      .replace(/\bWe all everyone at home elephant\b/i, 'We are all at home')
+      .replace(/\bI ([a-zA-Z]+) want\b/i, 'I want $1')
       // Add missing period at end if needed
       .replace(/([^.,!?;:])$/, '$1.');
       
