@@ -16,9 +16,9 @@ import { translateManglishToEnglish } from "@/lib/translator";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { HistoryDrawer } from "./history-drawer";
+import { MalayalamSpinner } from "@/components/ui/malayalam-spinner";
 import {
   Collapsible,
   CollapsibleContent,
@@ -170,13 +170,12 @@ export function ManglishConverter({ displayLanguage }: ConverterProps) {
           </div>
 
           {isTranslating && (
-            <div className="my-4">
-              <Progress value={80} className="h-1" />
-              <p className="text-xs text-center mt-1 text-gray-500">
-                {displayLanguage === "english"
-                  ? "Translating..."
-                  : "വിവർത്തനം ചെയ്യുന്നു..."}
-              </p>
+            <div className="my-6 flex justify-center">
+              <MalayalamSpinner 
+                size="md" 
+                text={displayLanguage === "english" ? "Translating..." : "വിവർത്തനം ചെയ്യുന്നു..."} 
+                colorful={true}
+              />
             </div>
           )}
 
