@@ -58,7 +58,7 @@ export default function Home() {
 
       <main className="flex-1 container py-8">
         <div className="max-w-3xl mx-auto mb-8 text-center">
-          <h1 className="text-3xl font-bold tracking-tight mb-3">
+          <h1 className="text-3xl font-bold tracking-tight mb-4 text-emerald-700 title-underline">
             {displayLanguage === "english"
               ? "Artham: Manglish to English Translator"
               : "അർത്ഥം: മംഗ്ലീഷ് ടു ഇംഗ്ലീഷ് വിവർത്തകൻ"}
@@ -82,8 +82,8 @@ export default function Home() {
           <ManglishConverter displayLanguage={displayLanguage} />
         </div>
 
-        <div className="mt-16 bg-gray-50 rounded-lg p-6 max-w-3xl mx-auto border">
-          <h2 className="text-xl font-semibold mb-4">
+        <div className="mt-16 rounded-lg p-6 max-w-3xl mx-auto bg-white border border-gray-100 shadow-sm feature-card">
+          <h2 className="text-xl font-semibold mb-4 text-emerald-700 relative title-underline">
             {displayLanguage === "english"
               ? "About Manglish"
               : "മംഗ്ലീഷിനെ കുറിച്ച്"}

@@ -136,10 +136,10 @@ export function ManglishConverter({ displayLanguage }: ConverterProps) {
 
   return (
     <div className="w-full max-w-3xl mx-auto space-y-6">
-      <Card className="shadow-md">
+      <Card className="shadow-sm border border-gray-100 bg-white">
         <CardContent className="p-6">
           <div className="mb-4">
-            <h2 className="text-lg font-medium mb-2">
+            <h2 className="text-lg font-semibold mb-2 text-emerald-700 relative title-underline">
               {displayLanguage === "english"
                 ? "Manglish (Malayalam in Roman script)"
                 : "മംഗ്ലീഷ് (റോമൻ ലിപിയിലെ മലയാളം)"}
@@ -182,14 +182,14 @@ export function ManglishConverter({ displayLanguage }: ConverterProps) {
 
           <div>
             <div className="flex justify-between items-center mb-2">
-              <h2 className="text-lg font-medium">
+              <h2 className="text-lg font-semibold text-emerald-700 relative title-underline">
                 {displayLanguage === "english"
                   ? "English Translation"
                   : "ഇംഗ്ലീഷ് വിവർത്തനം"}
               </h2>
               <CopyButton text={englishText} />
             </div>
-            <div className="min-h-32 p-3 bg-gray-50 rounded-md border relative overflow-hidden">
+            <div className="min-h-32 p-4 bg-gray-50 rounded-md border border-gray-100 shadow-inner relative overflow-hidden">
               <AnimatePresence mode="wait">
                 {englishText ? (
                   <motion.div
@@ -255,16 +255,16 @@ export function ManglishConverter({ displayLanguage }: ConverterProps) {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="px-6 py-4 bg-gray-50 border-t flex justify-between">
+        <CardFooter className="px-6 py-4 bg-white border-t flex justify-between">
           <div className="flex gap-2">
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
               <Button
                 onClick={handleTranslate}
                 disabled={isTranslating || !manglishText.trim()}
-                className="gap-2 relative overflow-hidden"
+                className="btn-primary gap-2 relative overflow-hidden"
               >
                 {isTranslating ? (
                   <RotateCw className="h-4 w-4 animate-spin" />
@@ -313,14 +313,14 @@ export function ManglishConverter({ displayLanguage }: ConverterProps) {
         displayLanguage={displayLanguage}
       />
 
-      <Card>
+      <Card className="feature-card">
         <Collapsible
           open={isExampleOpen}
           onOpenChange={setIsExampleOpen}
           className="w-full"
         >
           <div className="flex items-center justify-between px-6 py-4 border-b">
-            <h3 className="font-medium">
+            <h3 className="font-medium text-emerald-700 title-underline">
               {displayLanguage === "english" ? "Examples" : "ഉദാഹരണങ്ങൾ"}
             </h3>
             <CollapsibleTrigger asChild>
